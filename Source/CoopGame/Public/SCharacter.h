@@ -8,6 +8,7 @@
 
 class UCameraComponent;
 class USpringArmComponent;
+class ASWeapon;
 
 UCLASS()
 class COOPGAME_API ASCharacter : public ACharacter
@@ -17,6 +18,9 @@ class COOPGAME_API ASCharacter : public ACharacter
 public:
 	// Sets default values for this character's properties
 	ASCharacter();
+
+	UPROPERTY(EditAnywhere, Category = "Components")
+	ASWeapon* CurrentWeapon;
 
 protected:
 	// Called when the game starts or when spawned
@@ -35,7 +39,7 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	USpringArmComponent* SpringArmComp;
-
+	
 	bool bWantsToZoom;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Player")
@@ -49,7 +53,9 @@ protected:
 
 	void BeginZoom();
 
-	void EndZoom();
+	void EndZoom();	
+
+	void Fire();
 
 public:	
 	// Called every frame
