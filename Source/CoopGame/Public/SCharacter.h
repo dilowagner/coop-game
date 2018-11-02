@@ -19,9 +19,6 @@ public:
 	// Sets default values for this character's properties
 	ASCharacter();
 
-	UPROPERTY(EditAnywhere, Category = "Components")
-	ASWeapon* CurrentWeapon;
-
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -54,6 +51,14 @@ protected:
 	void BeginZoom();
 
 	void EndZoom();	
+
+	ASWeapon* CurrentWeapon;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Player")
+	TSubclassOf<ASWeapon> StarterWeaponClass;
+
+	UPROPERTY(VisibleDefaultsOnly, Category = "Player")
+	FName WeaponAttachSocketName;
 
 	void Fire();
 
