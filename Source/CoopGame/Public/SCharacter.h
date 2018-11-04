@@ -8,6 +8,7 @@
 
 class UCameraComponent;
 class USpringArmComponent;
+class USHealthComponent;
 class ASWeapon;
 
 UCLASS()
@@ -36,6 +37,8 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	USpringArmComponent* SpringArmComp;
+
+	USHealthComponent* HealthComp;
 	
 	bool bWantsToZoom;
 
@@ -63,6 +66,9 @@ protected:
 	void StartFire();
 
 	void StopFire();
+
+	UFUNCTION()
+	void OnHealthChanged(USHealthComponent* HealthComp, float Health, float HealthDelta, const class UDamageType* DamageType, class AController* InstigatedBy, AActor* DamageCauser);
 
 public:	
 	// Called every frame
