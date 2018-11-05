@@ -71,6 +71,7 @@ protected:
 	void OnHealthChanged(USHealthComponent* HealthComp, float Health, float HealthDelta, const class UDamageType* DamageType, class AController* InstigatedBy, AActor* DamageCauser);
 
 	/* Pawn died previously */
+	UPROPERTY(BlueprintReadOnly, Category = "Player")
 	bool bDied;
 
 public:	
