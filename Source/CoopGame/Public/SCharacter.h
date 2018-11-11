@@ -56,6 +56,7 @@ protected:
 
 	void EndZoom();	
 
+	UPROPERTY(Replicated)
 	ASWeapon* CurrentWeapon;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Player")
@@ -74,6 +75,8 @@ protected:
 	/* Pawn died previously */
 	UPROPERTY(BlueprintReadOnly, Category = "Player")
 	bool bDied;
+
+	void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const;
 
 public:	
 	// Called every frame
