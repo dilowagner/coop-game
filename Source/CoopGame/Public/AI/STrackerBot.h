@@ -25,7 +25,10 @@ protected:
 	UStaticMeshComponent* MeshComp;
 
 	UFUNCTION()
-	FVector FindNextPathPoint();
+	FVector GetNextPathPoint();
+
+	// Next point in navigation path
+	FVector NextPathPoint;
 
 public:	
 	// Called every frame

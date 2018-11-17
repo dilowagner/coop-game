@@ -16,7 +16,8 @@ ASTrackerBot::ASTrackerBot()
 
 	MeshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MeshComp"));
 	MeshComp->SetCanEverAffectNavigation(false);
-	MeshComp->SetMobility(EComponentMobility::Movable);
+	MeshComp->SetSimulatePhysics(true);
+
 	RootComponent = MeshComp;		
 }
 
@@ -24,9 +25,11 @@ ASTrackerBot::ASTrackerBot()
 void ASTrackerBot::BeginPlay()
 {
 	Super::BeginPlay();	
+
+	FVector NextPoint = GetNextPathPoint()
 }
 
-FVector ASTrackerBot::FindNextPathPoint()
+FVector ASTrackerBot::GetNextPathPoint()
 {
  	ACharacter* PlayerPawn =  UGameplayStatics::GetPlayerCharacter(this, 0);
 
@@ -44,4 +47,9 @@ FVector ASTrackerBot::FindNextPathPoint()
 void ASTrackerBot::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	if (!GetActorLocation().Equals(NextPathPoint))
+	{
+		// Keep moving towards next target
+	}
 }
