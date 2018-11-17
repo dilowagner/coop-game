@@ -12,6 +12,7 @@ ASTrackerBot::ASTrackerBot()
 
 	MeshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MeshComp"));
 	MeshComp->SetCanEverAffectNavigation(false);
+	MeshComp->SetMobility(EComponentMobility::Movable);
 	RootComponent = MeshComp;		
 }
 
