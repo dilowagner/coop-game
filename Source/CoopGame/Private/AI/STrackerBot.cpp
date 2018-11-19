@@ -6,7 +6,7 @@
 #include "NavigationSystem/Public/NavigationPath.h"
 #include "GameFramework/Character.h"
 #include "Kismet/GameplayStatics.h"
-
+#include "DrawDebugHelpers.h"
 
 // Sets default values
 ASTrackerBot::ASTrackerBot()
@@ -20,7 +20,7 @@ ASTrackerBot::ASTrackerBot()
 
 	RootComponent = MeshComp;	
 
-	bUseVelocityChange = false;
+	bUseVelocityChange = true;
 	MovementForce = 1000;
 
 	RequiredDistanceToTarget = 100;
@@ -58,6 +58,8 @@ void ASTrackerBot::Tick(float DeltaTime)
 	if (DistanceToTarget <= RequiredDistanceToTarget)
 	{
 		NextPathPoint = GetNextPathPoint();
+
+		DrawDebugString(GetWorld(), GetActorLocation(), "Target Reached!");
 	}
 	else 
 	{
@@ -68,5 +70,9 @@ void ASTrackerBot::Tick(float DeltaTime)
 		ForceDirection *= MovementForce;
 
 		MeshComp->AddForce(ForceDirection, NAME_None, bUseVelocityChange);
+
+		DrawDebugDirectionalArrow(GetWorld(), GetActorLocation(), GetActorLocation() + ForceDirection, 32, FColor::Yellow, false, 0.0f, 0, 1.0f);
 	}
+
+	DrawDebugSphere(GetWorld(), NextPathPoint, 20, 12, FColor::Yellow, false, 0.0f, 1.0f);
 }
