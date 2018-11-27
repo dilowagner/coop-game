@@ -67,7 +67,6 @@ void ASTrackerBot::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	float DistanceToTarget = (GetActorLocation() - NextPathPoint).Size();
-	
 	if (DistanceToTarget <= RequiredDistanceToTarget)
 	{
 		NextPathPoint = GetNextPathPoint();
