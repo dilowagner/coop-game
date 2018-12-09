@@ -46,6 +46,12 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "TrackerBot")
 	float RequiredDistanceToTarget;
 
+	UPROPERTY(EditDefaultsOnly, Category = "TrackerBot")
+	class USoundCue* SelfDestructSound;
+
+	UPROPERTY(EditDefaultsOnly, Category = "TrackerBot")
+	class USoundCue* ExplodeSound;
+
 	class UMaterialInstanceDynamic* MatInst;
 
 	void SelfDestruct();

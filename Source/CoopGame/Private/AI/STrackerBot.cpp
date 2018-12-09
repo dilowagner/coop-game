@@ -12,6 +12,7 @@
 #include "Materials/MaterialInstanceDynamic.h"
 #include "Particles/ParticleSystemComponent.h"
 #include "Components/SphereComponent.h"
+#include "Sound/SoundCue.h"
 
 // Sets default values
 ASTrackerBot::ASTrackerBot()
@@ -88,6 +89,8 @@ void ASTrackerBot::NotifyActorBeginOverlap(AActor* OtherActor)
 			GetWorldTimerManager().SetTimer(TimerHandle_SelfDamage, this, &ASTrackerBot::DamageSelf, 0.5f, true, 0.0f);
 
 			bStartedSelfDestruction = true;
+
+			UGameplayStatics::SpawnSoundAttached(SelfDestructSound, RootComponent);
 		}
 	}	
 }
@@ -129,6 +132,7 @@ void ASTrackerBot::SelfDestruct()
 	// Apply Damage!
 	UGameplayStatics::ApplyRadialDamage(this, ExplosionDamage, GetActorLocation(), ExplosionRadius, nullptr, IgnoredActors, this, GetInstigatorController(), true);
 
+	UGameplayStatics::PlaySoundAtLocation(this, ExplodeSound, GetActorLocation());
 	DrawDebugSphere(GetWorld(), GetActorLocation(), ExplosionRadius, 12, FColor::Red, false, 2.0f, 0, 1.0f);
 	// Delete Actor immediatelly
 	Destroy();
@@ -140,10 +144,10 @@ void ASTrackerBot::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	float DistanceToTarget = (GetActorLocation() - NextPathPoint).Size();
+
 	if (DistanceToTarget <= RequiredDistanceToTarget)
 	{
 		NextPathPoint = GetNextPathPoint();
-
 		//DrawDebugString(GetWorld(), GetActorLocation(), "Target Reached!");
 	}
 	else 
