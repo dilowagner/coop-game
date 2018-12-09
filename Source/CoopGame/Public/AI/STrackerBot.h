@@ -25,6 +25,9 @@ protected:
 	UPROPERTY(VisibleDefaultsOnly, Category = "Components")
 	class USHealthComponent* HealthComp;
 
+	UPROPERTY(VisibleDefaultsOnly, Category = "Components")
+	class USphereComponent* SphereComp;
+
 	UFUNCTION()
 	void HandleTakeDamage(USHealthComponent* OwingHealthComp, float Health, float HealthDelta, const class UDamageType* DamageType, class AController* InstigatedBy, AActor* DamageCauser);
 
@@ -62,4 +65,5 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 		
+	virtual void NotifyActorBeginOverlap(AActor* OtherActor) override;
 };

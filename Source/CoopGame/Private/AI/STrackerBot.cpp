@@ -10,6 +10,7 @@
 #include "SHealthComponent.h"
 #include "Materials/MaterialInstanceDynamic.h"
 #include "Particles/ParticleSystemComponent.h"
+#include "Components/SphereComponent.h"
 
 // Sets default values
 ASTrackerBot::ASTrackerBot()
@@ -26,6 +27,10 @@ ASTrackerBot::ASTrackerBot()
 	HealthComp = CreateDefaultSubobject<USHealthComponent>(TEXT("HealthComp"));
 	HealthComp->OnHealthChanged.AddDynamic(this, &ASTrackerBot::HandleTakeDamage);
 
+	SphereComp = CreateDefaultSubobject<USphereComponent>(TEXT("SphereComp"));
+	SphereComp->SetSphereRadius(200);
+	SphereComp->SetupAttachment(RootComponent);
+
 	bUseVelocityChange = false;
 	MovementForce = 1000;
 
@@ -41,6 +46,8 @@ void ASTrackerBot::BeginPlay()
 	Super::BeginPlay();	
 	// Find initial move-to
 	NextPathPoint = GetNextPathPoint();
+
+	OnActorBeginOverlap.AddDynamic(this);
 }
 
 void ASTrackerBot::HandleTakeDamage(USHealthComponent* OwingHealthComp, float Health, float HealthDelta, const class UDamageType* DamageType, class AController* InstigatedBy, AActor* DamageCauser)
@@ -78,6 +85,11 @@ FVector ASTrackerBot::GetNextPathPoint()
 	}
 
 	return GetActorLocation();
+}
+
+void ASTrackerBot::NotifyActorBeginOverlap(AActor* OtherActor)
+{
+	
 }
 
 void ASTrackerBot::SelfDestruct()
