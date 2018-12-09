@@ -7,12 +7,14 @@
 #include "NavigationSystem/Public/NavigationPath.h"
 #include "GameFramework/Character.h"
 #include "Kismet/GameplayStatics.h"
+#include "Kismet/KismetMathLibrary.h"
 #include "DrawDebugHelpers.h"
 #include "SHealthComponent.h"
 #include "Materials/MaterialInstanceDynamic.h"
 #include "Particles/ParticleSystemComponent.h"
 #include "Components/SphereComponent.h"
 #include "Sound/SoundCue.h"
+#include "Components/AudioComponent.h"
 
 // Sets default values
 ASTrackerBot::ASTrackerBot()
@@ -144,6 +146,11 @@ void ASTrackerBot::SelfDestruct()
 void ASTrackerBot::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	// Implement audio volume with velocity Tracker Bot
+	UAudioComponent* AudioComp = FindComponentByClass<UAudioComponent>();
+	float Volume = UKismetMathLibrary::MapRangeClamped(GetVelocity().Size(), 10.0f, 1000.0f, 0.1f, 2.0f);
+	AudioComp->SetVolumeMultiplier(Volume);
 
 	float DistanceToTarget = (GetActorLocation() - NextPathPoint).Size();
 
