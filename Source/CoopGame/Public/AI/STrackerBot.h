@@ -55,11 +55,17 @@ protected:
 
 	bool bExploded;
 
+	bool bStartedSelfDestruction;
+
 	UPROPERTY(EditDefaultsOnly, Category = "TrackerBot")
 	float ExplosionRadius;
 
 	UPROPERTY(EditDefaultsOnly, Category = "TrackerBot")
 	float ExplosionDamage;
+
+	FTimerHandle TimerHandle_SelfDamage;
+
+	void DamageSelf();
 
 public:	
 	// Called every frame

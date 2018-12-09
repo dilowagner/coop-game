@@ -1,6 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "STrackerBot.h"
+#include "SCharacter.h"
 #include "Components/StaticMeshComponent.h"
 #include "NavigationSystem/Public/NavigationSystem.h"
 #include "NavigationSystem/Public/NavigationPath.h"
@@ -29,6 +30,9 @@ ASTrackerBot::ASTrackerBot()
 
 	SphereComp = CreateDefaultSubobject<USphereComponent>(TEXT("SphereComp"));
 	SphereComp->SetSphereRadius(200);
+	SphereComp->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+	SphereComp->SetCollisionResponseToAllChannels(ECR_Ignore);
+	SphereComp->SetCollisionResponseToChannel(ECC_Pawn, ECR_Overlap);
 	SphereComp->SetupAttachment(RootComponent);
 
 	bUseVelocityChange = false;
@@ -46,8 +50,6 @@ void ASTrackerBot::BeginPlay()
 	Super::BeginPlay();	
 	// Find initial move-to
 	NextPathPoint = GetNextPathPoint();
-
-	OnActorBeginOverlap.AddDynamic(this);
 }
 
 void ASTrackerBot::HandleTakeDamage(USHealthComponent* OwingHealthComp, float Health, float HealthDelta, const class UDamageType* DamageType, class AController* InstigatedBy, AActor* DamageCauser)
@@ -73,9 +75,31 @@ void ASTrackerBot::HandleTakeDamage(USHealthComponent* OwingHealthComp, float He
 	}
 }
 
+void ASTrackerBot::NotifyActorBeginOverlap(AActor* OtherActor)
+{
+	if(!bStartedSelfDestruction)
+	{
+		ASCharacter* PlayerPawn = Cast<ASCharacter>(OtherActor);
+		if(PlayerPawn)
+		{
+			// We overlapped with a Player!
+
+			// Start self destruction sequence
+			GetWorldTimerManager().SetTimer(TimerHandle_SelfDamage, this, &ASTrackerBot::DamageSelf, 0.5f, true, 0.0f);
+
+			bStartedSelfDestruction = true;
+		}
+	}	
+}
+
+void ASTrackerBot::DamageSelf()
+{
+	UGameplayStatics::ApplyDamage(this, 20, GetInstigatorController(), this, nullptr);
+}
+
 FVector ASTrackerBot::GetNextPathPoint()
 {
- 	ACharacter* PlayerPawn =  UGameplayStatics::GetPlayerCharacter(this, 0);
+	ACharacter* PlayerPawn =  UGameplayStatics::GetPlayerCharacter(this, 0);
 
 	UNavigationPath* NavPath = UNavigationSystemV1::FindPathToActorSynchronously(this, GetActorLocation(), PlayerPawn);
 	
@@ -87,10 +111,7 @@ FVector ASTrackerBot::GetNextPathPoint()
 	return GetActorLocation();
 }
 
-void ASTrackerBot::NotifyActorBeginOverlap(AActor* OtherActor)
-{
-	
-}
+
 
 void ASTrackerBot::SelfDestruct()
 {
