@@ -53,8 +53,12 @@ ASTrackerBot::ASTrackerBot()
 void ASTrackerBot::BeginPlay()
 {
 	Super::BeginPlay();	
-	// Find initial move-to
-	NextPathPoint = GetNextPathPoint();
+
+	if(Role == ROLE_Authority)
+	{
+		// Find initial move-to
+		NextPathPoint = GetNextPathPoint();
+	}	
 }
 
 void ASTrackerBot::HandleTakeDamage(USHealthComponent* OwingHealthComp, float Health, float HealthDelta, const class UDamageType* DamageType, class AController* InstigatedBy, AActor* DamageCauser)
@@ -82,18 +86,20 @@ void ASTrackerBot::HandleTakeDamage(USHealthComponent* OwingHealthComp, float He
 
 void ASTrackerBot::NotifyActorBeginOverlap(AActor* OtherActor)
 {
-	if(!bStartedSelfDestruction)
+	if(!bStartedSelfDestruction && !bExploded)
 	{
 		ASCharacter* PlayerPawn = Cast<ASCharacter>(OtherActor);
 		if(PlayerPawn)
 		{
 			// We overlapped with a Player!
 
-			// Start self destruction sequence
-			GetWorldTimerManager().SetTimer(TimerHandle_SelfDamage, this, &ASTrackerBot::DamageSelf, SelfDamageInterval, true, 0.0f);
+			if(Role == ROLE_Authority) 
+			{
+				// Start self destruction sequence
+				GetWorldTimerManager().SetTimer(TimerHandle_SelfDamage, this, &ASTrackerBot::DamageSelf, SelfDamageInterval, true, 0.0f);
+			}			
 
 			bStartedSelfDestruction = true;
-
 			UGameplayStatics::SpawnSoundAttached(SelfDestructSound, RootComponent);
 		}
 	}	
@@ -130,16 +136,24 @@ void ASTrackerBot::SelfDestruct()
 	bExploded = true;
 
 	UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ExplosionEffect, GetActorLocation());
-	TArray<AActor*> IgnoredActors;
-	IgnoredActors.Add(this);
-
-	// Apply Damage!
-	UGameplayStatics::ApplyRadialDamage(this, ExplosionDamage, GetActorLocation(), ExplosionRadius, nullptr, IgnoredActors, this, GetInstigatorController(), true);
-
 	UGameplayStatics::PlaySoundAtLocation(this, ExplodeSound, GetActorLocation());
-	DrawDebugSphere(GetWorld(), GetActorLocation(), ExplosionRadius, 12, FColor::Red, false, 2.0f, 0, 1.0f);
-	// Delete Actor immediatelly
-	Destroy();
+
+	MeshComp->SetVisibility(false, true);
+	MeshComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
+	if(Role == ROLE_Authority)
+	{
+		TArray<AActor*> IgnoredActors;
+		IgnoredActors.Add(this);
+
+		// Apply Damage!
+		UGameplayStatics::ApplyRadialDamage(this, ExplosionDamage, GetActorLocation(), ExplosionRadius, nullptr, IgnoredActors, this, GetInstigatorController(), true);
+
+		DrawDebugSphere(GetWorld(), GetActorLocation(), ExplosionRadius, 12, FColor::Red, false, 2.0f, 0, 1.0f);
+		// Delete Actor immediatelly
+		//Destroy();
+		SetLifeSpan(2.0f);
+	}	
 }
 
 // Called every frame
@@ -147,30 +161,33 @@ void ASTrackerBot::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	// Implement audio volume with velocity Tracker Bot
-	UAudioComponent* AudioComp = FindComponentByClass<UAudioComponent>();
-	float Volume = UKismetMathLibrary::MapRangeClamped(GetVelocity().Size(), 10.0f, 1000.0f, 0.1f, 2.0f);
-	AudioComp->SetVolumeMultiplier(Volume);
-
-	float DistanceToTarget = (GetActorLocation() - NextPathPoint).Size();
-
-	if (DistanceToTarget <= RequiredDistanceToTarget)
+	if(Role == ROLE_Authority && !bExploded)
 	{
-		NextPathPoint = GetNextPathPoint();
-		//DrawDebugString(GetWorld(), GetActorLocation(), "Target Reached!");
-	}
-	else 
-	{
-		// Keep moving towards next target
-		FVector ForceDirection = NextPathPoint - GetActorLocation();
-		ForceDirection.Normalize();
+		// Implement audio volume with velocity Tracker Bot
+		UAudioComponent* AudioComp = FindComponentByClass<UAudioComponent>();
+		float Volume = UKismetMathLibrary::MapRangeClamped(GetVelocity().Size(), 10.0f, 1000.0f, 0.1f, 2.0f);
+		AudioComp->SetVolumeMultiplier(Volume);
 
-		ForceDirection *= MovementForce;
+		float DistanceToTarget = (GetActorLocation() - NextPathPoint).Size();
 
-		MeshComp->AddForce(ForceDirection, NAME_None, bUseVelocityChange);
+		if (DistanceToTarget <= RequiredDistanceToTarget)
+		{
+			NextPathPoint = GetNextPathPoint();
+			//DrawDebugString(GetWorld(), GetActorLocation(), "Target Reached!");
+		}
+		else 
+		{
+			// Keep moving towards next target
+			FVector ForceDirection = NextPathPoint - GetActorLocation();
+			ForceDirection.Normalize();
 
-		//DrawDebugDirectionalArrow(GetWorld(), GetActorLocation(), GetActorLocation() + ForceDirection, 32, FColor::Yellow, false, 0.0f, 0, 1.0f);
-	}
+			ForceDirection *= MovementForce;
 
-	//DrawDebugSphere(GetWorld(), NextPathPoint, 20, 12, FColor::Yellow, false, 0.0f, 1.0f);
+			MeshComp->AddForce(ForceDirection, NAME_None, bUseVelocityChange);
+
+			//DrawDebugDirectionalArrow(GetWorld(), GetActorLocation(), GetActorLocation() + ForceDirection, 32, FColor::Yellow, false, 0.0f, 0, 1.0f);
+		}
+
+		//DrawDebugSphere(GetWorld(), NextPathPoint, 20, 12, FColor::Yellow, false, 0.0f, 1.0f);
+	}	
 }
