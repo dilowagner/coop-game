@@ -76,6 +76,14 @@ protected:
 
 	void DamageSelf();
 
+	// CHALLENGE CODE
+
+	// find nearby enemies and grow in 'power level' based on the ammount
+	void OnCheckNearbyBots();
+
+	// the power boost of the bot, affects damaged caused to enemies and color of the bot (range: 1 to 4)
+	int32 PowerLevel;
+
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
