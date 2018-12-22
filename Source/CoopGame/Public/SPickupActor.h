@@ -6,6 +6,8 @@
 #include "GameFramework/Actor.h"
 #include "SPickupActor.generated.h"
 
+class ASPowerupActor;
+
 UCLASS()
 class COOPGAME_API ASPickupActor : public AActor
 {
@@ -20,6 +22,18 @@ public:
 
 	UPROPERTY(VisibleAnywhere, Category = "Components")
 	class UDecalComponent* DecalComp;
+
+	UPROPERTY(EditDefaultsOnly, Category = "PickupActor")
+	TSubclassOf<ASPowerupActor> PowerUpClass;
+
+	ASPowerupActor* PowerUpInstance;
+
+	UPROPERTY(EditDefaultsOnly, Category = "PickupActor")
+	float CooldownDuration;
+
+	FTimerHandle TimerHandle_RespawnTimer;
+
+	void Respawn();
 
 protected:
 	// Called when the game starts or when spawned
