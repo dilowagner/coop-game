@@ -37,9 +37,11 @@ protected:
 	UFUNCTION(BlueprintImplementableEvent, Category = "GameState")
 	void WaveStateChanged(EWaveState NewState, EWaveState OldState);
 
-public:
-
 	UPROPERTY(BlueprintReadOnly, ReplicatedUsing=OnRep_WaveState, Category = "GameState")
 	EWaveState WaveState;
+
+public:
+
+	void SetWaveState(EWaveState NewState);
 	
 };

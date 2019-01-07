@@ -90,7 +90,7 @@ void ASGameMode::CheckWaveState()
     if(! bIsAnyBotAlive)
     {
         SetWaveState(EWaveState::WaveComplete);
-        
+
         PrepareForNextWave();
     }
 }
@@ -140,6 +140,6 @@ void ASGameMode::SetWaveState(EWaveState NewState)
     ASGameState* GS = GetGameState<ASGameState>();
     if(ensureAlways(GS))
     {
-        GS->WaveState = NewState;
+        GS->SetWaveState(NewState);
     }
 }
