@@ -157,7 +157,7 @@ void ASTrackerBot::SelfDestruct()
 		// Apply Damage!
 		UGameplayStatics::ApplyRadialDamage(this, ActualDamage, GetActorLocation(), ExplosionRadius, nullptr, IgnoredActors, this, GetInstigatorController(), true);
 
-		DrawDebugSphere(GetWorld(), GetActorLocation(), ExplosionRadius, 12, FColor::Red, false, 2.0f, 0, 1.0f);
+		//DrawDebugSphere(GetWorld(), GetActorLocation(), ExplosionRadius, 12, FColor::Red, false, 2.0f, 0, 1.0f);
 		// Delete Actor immediatelly
 		//Destroy();
 		SetLifeSpan(2.0f);
@@ -218,7 +218,7 @@ void ASTrackerBot::OnCheckNearbyBots()
 	TArray<FOverlapResult> Overlaps;
 	GetWorld()->OverlapMultiByObjectType(Overlaps, GetActorLocation(), FQuat::Identity, QueryParams, CollShape);
 
-	DrawDebugSphere(GetWorld(), GetActorLocation(), Radius, 12, FColor::White, false, 1.0f);
+	//DrawDebugSphere(GetWorld(), GetActorLocation(), Radius, 12, FColor::White, false, 1.0f);
 
 	int32 NrOfBots = 0;
 	// loop over the results using a "range based for loop"
@@ -256,5 +256,5 @@ void ASTrackerBot::OnCheckNearbyBots()
 	}
 
 	// Draw on the bot location
-	DrawDebugString(GetWorld(), FVector(0,0,0), FString::FromInt(PowerLevel), this, FColor::White, 1.0f, true);
+	//DrawDebugString(GetWorld(), FVector(0,0,0), FString::FromInt(PowerLevel), this, FColor::White, 1.0f, true);
 }
