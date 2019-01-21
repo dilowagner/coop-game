@@ -84,6 +84,10 @@ protected:
 	// the power boost of the bot, affects damaged caused to enemies and color of the bot (range: 1 to 4)
 	int32 PowerLevel;
 
+	FTimerHandle TimerHandle_RefreshPath;
+
+	void RefreshPath();
+
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
